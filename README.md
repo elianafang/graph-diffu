@@ -10,16 +10,27 @@ A novel diffusion-based framework designed to automatically learn natural human 
 | Human3.6M     | GT         | -1.21 ↓ | -4.84 ↓   | —       | —       |
 | MPI-INF-3DHP  | GT         | -0.40 ↓ | — | 99.14 (0.24 🔺) | 80.45 (0.45 🔺) |
 
-<p align="center">
-    <img width="638" alt="image" src="https://github.com/user-attachments/assets/7209abaf-996f-43a2-aafb-3ad4ada07a39" />
+<p align="left">
+<img width="1517" alt="image" src="https://github.com/user-attachments/assets/f5fb7537-9db5-4767-b957-6cdbc2bc611b" />
 </p>
 
 
 ## Model Demo (Loading takes a while😊)
 <p align="center">
-    <img src="https://github.com/user-attachments/assets/dfce6249-1575-4442-ab5b-b849d5dc16b9" alt="Eating"/><br>
-    <img src="https://github.com/user-attachments/assets/dd7a1018-2173-47df-af82-33a3bad370ef" alt="Greeting"/><br>
-    <img src="https://github.com/user-attachments/assets/82f0c7c7-2060-48fe-97d3-a982feb6a954" alt="Walking"/>
+  <img src="https://github.com/user-attachments/assets/ca92b1c1-c798-4661-a9ac-55909cf7eb79" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/b0106c20-1e4a-442d-9cb9-e340501b4fa2" width="45%"/>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/667c8d4b-1419-40ab-8d97-598b21ee3f21" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/833dcb52-c044-47e0-be5d-b6ab1f205e15" width="45%"/>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e6ebbebe-9b4b-45fc-9396-ec0bdec6b83e" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/2f5c5215-f057-43ba-a92c-57279038f960" width="45%"/>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/78b296ed-132e-400f-8be3-ad9b9878f2bb" width="45%"/>
+  <img src="https://github.com/user-attachments/assets/63517d44-88b6-45a6-9553-fd99a605d0da" width="45%"/>
 </p>
 
 ---
@@ -37,7 +48,7 @@ python main.py -d h36m -k cpn_ft_h36m_dbb -str S1,S5,S6,S7,S8 -ste S9,S11 -c che
 The corresponding inference code:
 
 ```
-python main_gt.py -d h36m -k gt -str S1,S5,S6,S7,S8 -ste S9,S11 -c checkpoint/model_h36m_cpn -gpu 0 --nolog --evaluate best_epoch_1_1.bin --p2 -sampling_timesteps 10 -num_proposals 20 -b 4 -s 243 -f 243
+python main_gt.py -d h36m -k gt -str S1,S5,S6,S7,S8 -ste S9,S11 -c checkpoint/model_h36m_gt_heads=1_lrd0.998_s243_f243 -gpu 0 --nolog --evaluate best_epoch_1_1.bin --p2 -sampling_timesteps 10 -num_proposals 20 -b 4 -s 243 -f 243
 ```
 
 (2) Train GraphDiffu (using the ground truth 2D poses as inputs):
@@ -49,7 +60,7 @@ python main_gt.py -d h36m -k gt -str S1,S5,S6,S7,S8 -ste S9,S11 -c checkpoint/mo
 The corresponding inference code:
 
 ```
-python main_gt.py -d h36m -k gt -str S1,S5,S6,S7,S8 -ste S9,S11 -c checkpoint/model_h36m_gt -gpu 0 --nolog --evaluate best_epoch_1_1.bin --p2 -sampling_timesteps 10 -num_proposals 20 -b 4 -s 243 -f 243
+python main_gt.py -d h36m -k gt -str S1,S5,S6,S7,S8 -ste S9,S11 -c checkpoint/model_h36m_gt_heads=1_lrd0.998_s1_f1 -gpu 0 --nolog --evaluate best_epoch_1_1.bin --p2 -sampling_timesteps 10 -num_proposals 20 -b 4 -s 1 -f 1
 ```
 
 
@@ -59,13 +70,13 @@ python main_gt.py -d h36m -k gt -str S1,S5,S6,S7,S8 -ste S9,S11 -c checkpoint/mo
 Train GraphDiffu (using the ground truth 2D poses as inputs):
 
 ```bash
-python main_3dhp.py -d 3dhp -c checkpoint/model_3dhp -gpu 0,1 --nolog -lrd 0.995 -lr 0.00007 -e 120
+python main_3dhp.py -d 3dhp -c checkpoint/mpi_1_lr7e-5_lrd0.995 -gpu 0,1 --nolog -lrd 0.995 -lr 0.00007 -e 120
 ```
 
 The corresponding inference code:
 
 ```
-python main_3dhp.py -d 3dhp -c checkpoint/model_3dhp -gpu 0,1 --nolog --evaluate best_epoch_1_1.bin -num_proposals 20 -sampling_timesteps 10 -b 4
+python main_3dhp.py -d 3dhp -c checkpoint/mpi_1_lr7e-5_lrd0.995 -gpu 0,1 --nolog --evaluate best_epoch_1_1.bin -num_proposals 20 -sampling_timesteps 10 -b 4
 ```
 To calculate the MPJPE, AUC, and PCK metrics, pleae use the MATLAB script `./3dhp_test/test_util/mpii_test_predictions_ori_py.m` to evaluate the four `.mat` files in the `./checkpoint` directory. By modifying the `'aggregation_mode'` parameter in **line 29**, you can get results under different settings. The evaluation output will be saved as CSV files in the `./3dhp_test/test_util` directory, following the naming convention `mpii_3dhp_evaluation_sequencewise_ori_{setting_name}_t{iteration_index}.csv`. To get the final results, manually average the three metrics across the six sequences.
 
